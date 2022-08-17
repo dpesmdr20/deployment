@@ -7,12 +7,12 @@ name: deploy-djangoapp
 env:
   AWS_REGION                : "us-east-1"
   ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
-  ECS_TASK                  : "django-app"
+  ECS_TASK                  : "task_develop_django"
   ECS_TASK_STAGE            : "task_staging_django"
-  ECS_SERVICE               : "django-app"
+  ECS_SERVICE               : "service_develop_django"
   ECS_SERVICE_STAGE         : "service_staging_django"
   ECS_CLUSTER               : "django-app-cluster"
-  CONTAINER_NAME            : "django-app-container"
+  CONTAINER_NAME            : "container_develop_django"
   CONTAINER_NAME_STAGE      : "container_staging_django"
   ECR_REPOSITORY            : "djangoapp"
 
