@@ -62,11 +62,11 @@ jobs:
         ECS_SERVICE: ${{ env.ECS_SERVICE_STAGE }}
         CONTAINER_NAME: ${{ env.CONTAINER_NAME_STAGE }}
         run: |
-        aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
-        echo "ECS_SERVICE=${{ env.ECS_SERVICE_STAGE }}" >> $GITHUB_ENV
-        echo "ECS_TASK=${{ env.ECS_TASK_STAGE }}" >> $GITHUB_ENV
-        echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
-        echo "CONTAINER_NAME=${{ env.CONTAINER_NAME_STAGE }}" >> $GITHUB_ENV
+          aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
+          echo "ECS_SERVICE=${{ env.ECS_SERVICE_STAGE }}" >> $GITHUB_ENV
+          echo "ECS_TASK=${{ env.ECS_TASK_STAGE }}" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME_STAGE }}" >> $GITHUB_ENV
 
        - name: Download develop task definition
         if: ${{ env.BRANCH == 'develop' }}
@@ -76,11 +76,11 @@ jobs:
         ECS_SERVICE: ${{ env.ECS_SERVICE }}
         CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
         run: |
-        aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
-        echo "ECS_SERVICE=${{ env.ECS_SERVICE }}" >> $GITHUB_ENV
-        echo "ECS_TASK=${{ env.ECS_TASK }}" >> $GITHUB_ENV
-        echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
-        echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> $GITHUB_ENV
+          aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
+          echo "ECS_SERVICE=${{ env.ECS_SERVICE }}" >> $GITHUB_ENV
+          echo "ECS_TASK=${{ env.ECS_TASK }}" >> $GITHUB_ENV
+          echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> $GITHUB_ENV
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
