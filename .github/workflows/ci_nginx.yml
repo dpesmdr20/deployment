@@ -8,8 +8,8 @@ on:
     branches:
       - develop
     paths:
-      - 'proxy/**' 
-name: deploy-nginx
+      - 'proxy/**'
+name: deploynginx
 jobs:
     cicd_pipeline:
        name: cicd
