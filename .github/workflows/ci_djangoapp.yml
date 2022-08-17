@@ -1,4 +1,4 @@
-name: Deploy Django app on AWS Elastic Container Service (ECS) test
+name: Deploy Django app on AWS Elastic Container Service (ECS)
 env:
   AWS_REGION                : "us-east-1"
   ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
@@ -8,9 +8,10 @@ on:
     branches:
       - develop
 
+name: deploy-djangoapp
 jobs:
     cicd_pipeline:
-       name: Deploy
+       name: cicd
        runs-on: ubuntu-latest
        
        steps:
