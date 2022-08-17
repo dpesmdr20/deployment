@@ -1,4 +1,5 @@
 #!/bin/sh
+#test
 
 set -e
 
