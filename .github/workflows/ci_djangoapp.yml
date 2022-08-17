@@ -2,6 +2,7 @@ on:
   push:
     branches:
       - develop
+      - staging
 name: deploy-djangoapp
 env:
   AWS_REGION                : "us-east-1"
@@ -13,66 +14,67 @@ env:
 
 jobs:
     cicd_pipeline:
-       name: cicd
-       runs-on: ubuntu-latest
-       
-       steps:
-       - name: Git clone 
-         uses: actions/checkout@v1
-           
-       - name: Configure AWS Credentials
-         uses: aws-actions/configure-aws-credentials@v1
-         with:
-           aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY }}
-           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-           aws-region           : ${{ env.AWS_REGION }}
+      name: CI/CD Pipeline for ${{env.BRANCH}} on ${{ github.repository }}
+      describe: Cloning and checkout current branch
+      runs-on: ubuntu-latest
+      
+      steps:
+      - name: Git checkout branch
+        uses: actions/checkout@v3
+          
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v1
+      #   with:
+      #     aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+      #     aws-region           : ${{ env.AWS_REGION }}
 
-       - name: Login to Amazon ECR
-         id: login-ecr
-         uses: aws-actions/amazon-ecr-login@v1
+      # - name: Login to Amazon ECR
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v1
 
-       - name: Build, tag, and push image to Amazon ECR
-         id: build-image
-         env:
-           ECR_REPOSITORY: "djangoapp"
-           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-           IMAGE_TAG: ${{ github.sha }}
-         run: |
-           # Build a docker container and
-           # push it to ECR so that it can
-           # be deployed to ECS.
-           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      # - name: Build, tag, and push image to Amazon ECR
+      #   id: build-image
+      #   env:
+      #     ECR_REPOSITORY: "djangoapp"
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG: ${{ github.sha }}
+      #   run: |
+      #     # Build a docker container and
+      #     # push it to ECR so that it can
+      #     # be deployed to ECS.
+      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-       - name: Download task definition
-         id: download-stage-task-def
-         env:
-          ECS_TASK: ${{ env.ECS_TASK }}
-          ECS_SERVICE: ${{ env.ECS_SERVICE }}
-          CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
-         run: |
-          aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
-          echo "ECS_SERVICE=${{ env.ECS_SERVICE }}" >> $GITHUB_ENV
-          echo "ECS_TASK=${{ env.ECS_TASK }}" >> $GITHUB_ENV
-          echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
-          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> $GITHUB_ENV
+      # - name: Download task definition
+      #   id: download-stage-task-def
+      #   env:
+      #   ECS_TASK: ${{ env.ECS_TASK }}
+      #   ECS_SERVICE: ${{ env.ECS_SERVICE }}
+      #   CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+      #   run: |
+      #   aws ecs describe-task-definition --task-definition $ECS_TASK --query taskDefinition > task-definition.json
+      #   echo "ECS_SERVICE=${{ env.ECS_SERVICE }}" >> $GITHUB_ENV
+      #   echo "ECS_TASK=${{ env.ECS_TASK }}" >> $GITHUB_ENV
+      #   echo "ECS_CLUSTER=${{ env.ECS_CLUSTER }}" >> $GITHUB_ENV
+      #   echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}" >> $GITHUB_ENV
 
-       - name: Fill in the new image ID in the Amazon ECS task definition
-         id: task-def
-         uses: aws-actions/amazon-ecs-render-task-definition@v1
-         with:
-          task-definition: task-definition.json
-          container-name: ${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
+      # - name: Fill in the new image ID in the Amazon ECS task definition
+      #   id: task-def
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+      #   with:
+      #   task-definition: task-definition.json
+      #   container-name: ${{ env.CONTAINER_NAME }}
+      #   image: ${{ steps.build-image.outputs.image }}
 
-       - name: Deploy Amazon ECS task definition
-         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-         with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      # - name: Deploy Amazon ECS task definition
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      #   with:
+      #   task-definition: ${{ steps.task-def.outputs.task-definition }}
+      #   service: ${{ env.ECS_SERVICE }}
+      #   cluster: ${{ env.ECS_CLUSTER }}
+      #   wait-for-service-stability: true
 
-       - name: Print Status message on completion
-         run : echo "CI/CD Pipeline finished successfully"
+      # - name: Print Status message on completion
+      #   run : echo "CI/CD Pipeline finished successfully"
