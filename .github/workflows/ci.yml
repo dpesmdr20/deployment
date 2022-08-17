@@ -1,0 +1,54 @@
+name: Deploy Django app on AWS Elastic Container Service (ECS)
+env:
+  AWS_REGION                : "us-east-1"
+  ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
+  ECS_STAGE_TASK            : ""
+  ECS_STAGE_SERVICE         : ""
+  ECS_STAGE_CLUSTER         : ""
+  CONTAINER_STAGE_NAME      : ""
+  ECS_PROD_TASK             : ""
+  ECS_PROD_SERVICE          : ""
+  ECS_PROD_CLUSTER          : ""
+  CONTAINER_PROD_NAME       : ""
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+    cicd_pipeline:
+       name: Deploy
+       runs-on: ubuntu-latest
+       
+       steps:
+       - name: Git clone 
+         uses: actions/checkout@v1
+           
+       - name: Configure AWS Credentials
+         uses: aws-actions/configure-aws-credentials@v1
+         with:
+           aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+           aws-region           : ${{ env.AWS_REGION }}
+
+       - name: Login to Amazon ECR
+         id: login-ecr
+         uses: aws-actions/amazon-ecr-login@v1
+
+       - name: Build, tag, and push image to Amazon ECR
+         id: build-image
+         env:
+           ECR_REPOSITORY: "djangoapp"
+           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+           IMAGE_TAG: ${{ github.sha }}
+         run: |
+           # Build a docker container and
+           # push it to ECR so that it can
+           # be deployed to ECS.
+           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+       - name: Print Status message on completion
+         run : echo "CI/CD Pipeline finished successfully"
