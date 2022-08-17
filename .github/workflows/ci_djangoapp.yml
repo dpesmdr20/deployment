@@ -70,7 +70,7 @@ jobs:
 
     - name: Download develop task definition
       if: ${{ env.BRANCH == 'develop' }}
-      id: download-stage-task-def
+      id: download-task-def
       env:
         ECS_TASK: ${{ env.ECS_TASK }}
         ECS_SERVICE: ${{ env.ECS_SERVICE }}
