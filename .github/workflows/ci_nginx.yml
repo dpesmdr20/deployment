@@ -9,7 +9,6 @@ on:
       - develop
     paths:
       - 'proxy/**' 
-
 name: deploy-nginx
 jobs:
     cicd_pipeline:
