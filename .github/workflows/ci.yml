@@ -2,14 +2,6 @@ name: Deploy Django app on AWS Elastic Container Service (ECS)
 env:
   AWS_REGION                : "us-east-1"
   ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
-  ECS_STAGE_TASK            : ""
-  ECS_STAGE_SERVICE         : ""
-  ECS_STAGE_CLUSTER         : ""
-  CONTAINER_STAGE_NAME      : ""
-  ECS_PROD_TASK             : ""
-  ECS_PROD_SERVICE          : ""
-  ECS_PROD_CLUSTER          : ""
-  CONTAINER_PROD_NAME       : ""
 
 on:
   push:
