@@ -55,7 +55,7 @@ jobs:
       run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
 
     - name: Download stage task definition
-      # if: ${{ env.BRANCH == 'stasging' }}
+      if: ${{ env.BRANCH == 'staging' }}
       id: download-stage-task-def
       env:
         ECS_TASK: ${{ env.ECS_TASK_STAGE }}
