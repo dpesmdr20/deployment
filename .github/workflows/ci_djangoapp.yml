@@ -11,10 +11,11 @@ env:
   ECS_SERVICE               : "django-app"
   ECS_CLUSTER               : "django-app-cluster"
   CONTAINER_NAME            : "django-app-container"
+  
 
 jobs:
     cicd_pipeline:
-      name: CI/CD Pipeline for ${{env.BRANCH}} on ${{ github.repository }}
+      name: CI/CD Pipeline for ${{ github.repository }}
       describe: Cloning and checkout current branch
       runs-on: ubuntu-latest
       
