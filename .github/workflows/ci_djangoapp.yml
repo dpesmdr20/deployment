@@ -8,46 +8,53 @@ env:
   AWS_REGION                : "us-east-1"
   ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
   ECS_TASK                  : "django-app"
+  ECS_TASK_STAGE            : "task_staging_django"
   ECS_SERVICE               : "django-app"
+  ECS_SERVICE_STAGE         : "service_staging_django"
   ECS_CLUSTER               : "django-app-cluster"
   CONTAINER_NAME            : "django-app-container"
-  
+  ECR_REPOSITORY            : "djangoapp"
 
 jobs:
     cicd_pipeline:
-      name: CI/CD Pipeline for ${{ github.repository }}
+      name: CI/CD Pipeline
       runs-on: ubuntu-latest
       
       steps:
       - name: Git checkout branch
         uses: actions/checkout@v3
           
-      # - name: Configure AWS Credentials
-      #   uses: aws-actions/configure-aws-credentials@v1
-      #   with:
-      #     aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY }}
-      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-      #     aws-region           : ${{ env.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    : ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region           : ${{ env.AWS_REGION }}
 
-      # - name: Login to Amazon ECR
-      #   id: login-ecr
-      #   uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-      # - name: Build, tag, and push image to Amazon ECR
-      #   id: build-image
-      #   env:
-      #     ECR_REPOSITORY: "djangoapp"
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     IMAGE_TAG: ${{ github.sha }}
-      #   run: |
-      #     # Build a docker container and
-      #     # push it to ECR so that it can
-      #     # be deployed to ECS.
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REPOSITORY: ${{env.ECR_REPOSITORY}}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build a docker container and
+          # push it to ECR so that it can
+          # be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # - name: Download task definition
+      # - name: Get and set branch name
+      #    id: vars
+      #    run: echo "BRANCH=$(echo ${GITHUB_REF##*/})" >> $GITHUB_ENV
+
+      # - name: Download stage task definition
+      #   if: ${{ env.BRANCH == 'staging' }}
       #   id: download-stage-task-def
       #   env:
       #   ECS_TASK: ${{ env.ECS_TASK }}
