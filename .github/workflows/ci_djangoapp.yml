@@ -2,19 +2,15 @@ on:
   push:
     branches:
       - develop
-      - staging
-name: deploy-djangoapp
+name: wayback-deployment
 env:
-  AWS_REGION                : "us-east-1"
-  ECR_REGISTRY              : "724239100457.dkr.ecr.us-east-1.amazonaws.com"
-  ECS_TASK                  : "task_develop_django"
-  ECS_TASK_STAGE            : "task_staging_django"
-  ECS_SERVICE               : "service_develop_django"
-  ECS_SERVICE_STAGE         : "service_staging_django"
-  ECS_CLUSTER               : "cluster-django"
-  CONTAINER_NAME            : "container_develop_django"
-  CONTAINER_NAME_STAGE      : "container_staging_django"
-  ECR_REPOSITORY            : "djangoapp"
+  AWS_REGION                : "ap-south-1"
+  ECR_REGISTRY              : "724239100457.dkr.ecr.ap-south-1.amazonaws.com"
+  ECS_TASK                  : "task-dev-wayback"
+  ECS_SERVICE               : "service-dev-wayback"
+  ECS_CLUSTER               : "cluster-centrifugo"
+  CONTAINER_NAME            : "containter-dev-wayback"
+  ECR_REPOSITORY            : "wayback"
 
 jobs:
   cicd_pipeline:
